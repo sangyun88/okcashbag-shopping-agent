@@ -63,7 +63,10 @@ export default function App() {
       {/* ── Chat Drawer ── */}
       {chatOpen && (
         <div style={{
-          position: 'fixed', inset: 0, zIndex: 200,
+          position: 'fixed', top: 0, bottom: 0,
+          left: '50%', transform: 'translateX(-50%)',
+          width: '100%', maxWidth: 480,
+          zIndex: 200,
           display: 'flex', flexDirection: 'column',
           background: T.white,
         }}>
