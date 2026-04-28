@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { T } from '../tokens';
 import Card2 from '../components/ui/Card2';
 import SectionTitle from '../components/ui/SectionTitle';
@@ -11,7 +12,16 @@ const PRODUCTS = [
   { brand: '도미노피자', name: '슈퍼시드 콰트로 L', price: '18,900원', disc: '25%', rating: '4.2', reviews: '210' },
 ];
 
-export default function ScreenRecommend() {
+export default function ScreenRecommend({ onAISearch }) {
+  const [query, setQuery] = useState('');
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (!query.trim()) return;
+    onAISearch(query.trim());
+    setQuery('');
+  }
+
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: T.gray50 }}>
       {/* Hero banner */}
@@ -40,6 +50,51 @@ export default function ScreenRecommend() {
               width: i === 0 ? 16 : 6, height: 6, borderRadius: 3,
               background: i === 0 ? '#fff' : 'rgba(255,255,255,0.4)',
             }} />
+          ))}
+        </div>
+      </div>
+
+      {/* AI 검색창 */}
+      <div style={{ background: T.white, padding: '14px 14px 10px', borderBottom: `1px solid ${T.gray100}` }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', alignItems: 'center', gap: 8, background: T.gray50, borderRadius: 12, padding: '10px 14px', border: `1px solid ${T.gray100}` }}>
+          {/* 스파클 아이콘 */}
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+            <path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" fill={T.purple} />
+            <path d="M19 16L19.75 18.25L22 19L19.75 19.75L19 22L18.25 19.75L16 19L18.25 18.25L19 16Z" fill={T.purple} opacity="0.6" />
+          </svg>
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="AI에게 상품 추천 받기..."
+            style={{
+              flex: 1, background: 'none', border: 'none', outline: 'none',
+              fontSize: 14, color: T.gray900, fontFamily: 'inherit',
+            }}
+          />
+          <button
+            type="submit"
+            style={{
+              width: 32, height: 32, borderRadius: '50%', border: 'none', cursor: 'pointer',
+              background: query.trim() ? '#E8003D' : T.gray200,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0, transition: 'background 0.15s',
+            }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+              <path d="M22 2L11 13" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        </form>
+        {/* 빠른 질문 */}
+        <div style={{ display: 'flex', gap: 6, marginTop: 8, overflowX: 'auto' }}>
+          {['오늘 핫딜 추천', '스타벅스 쿠폰', '치킨 할인'].map((q) => (
+            <button key={q} onClick={() => onAISearch(q)} style={{
+              flexShrink: 0, background: 'none', border: `1px solid ${T.gray200}`,
+              borderRadius: 9999, padding: '4px 12px', fontSize: 12, color: T.gray700,
+              cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap',
+            }}>{q}</button>
           ))}
         </div>
       </div>

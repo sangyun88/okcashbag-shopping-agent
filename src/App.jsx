@@ -17,20 +17,17 @@ import ChatWindow from './components/chat/ChatWindow';
 import { useChatStore } from './store/chatStore';
 import { T } from './tokens';
 
-const SCREEN_MAP = {
-  '추천':    <ScreenRecommend />,
-  '공동구매': <ScreenGroupBuy />,
-  '오늘특가': <ScreenTodayDeal />,
-  'e쿠폰':   <ScreenECoupon />,
-  '영화티켓': <ScreenMovie />,
-};
-
 export default function App() {
   const [navTab,    setNavTab]    = useState('추천');
   const [bottomTab, setBottomTab] = useState('쇼핑');
   const [showMY,    setShowMY]    = useState(false);
   const [chatOpen,  setChatOpen]  = useState(false);
-  const reset = useChatStore((s) => s.reset);
+  const { reset, sendMessage } = useChatStore();
+
+  function handleAISearch(query) {
+    setChatOpen(true);
+    setTimeout(() => sendMessage(query), 100);
+  }
 
   const isDark = navTab === '오늘특가' && !showMY;
 
@@ -49,7 +46,11 @@ export default function App() {
         : (
           <>
             <NavBar active={navTab} onTab={setNavTab} dark={isDark} />
-            {SCREEN_MAP[navTab]}
+            {navTab === '추천'    && <ScreenRecommend onAISearch={handleAISearch} />}
+            {navTab === '공동구매' && <ScreenGroupBuy />}
+            {navTab === '오늘특가' && <ScreenTodayDeal />}
+            {navTab === 'e쿠폰'   && <ScreenECoupon />}
+            {navTab === '영화티켓' && <ScreenMovie />}
           </>
         )
       }
@@ -58,27 +59,6 @@ export default function App() {
         active={showMY ? '적립' : bottomTab}
         onTab={handleBottomTab}
       />
-
-      {/* ── AI Agent FAB ── */}
-      {!chatOpen && (
-        <button
-          onClick={() => setChatOpen(true)}
-          style={{
-            position: 'fixed', bottom: 72, right: 16,
-            width: 52, height: 52, borderRadius: '50%',
-            background: '#E8003D', border: 'none', cursor: 'pointer',
-            boxShadow: '0 4px 16px rgba(232,0,61,0.4)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            zIndex: 100,
-          }}
-          aria-label="AI 에이전트 열기"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2C6.477 2 2 6.477 2 12C2 13.89 2.525 15.655 3.438 17.168L2.046 21.953L6.832 20.561C8.345 21.474 10.11 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2Z" stroke="white" strokeWidth="2" strokeLinejoin="round"/>
-            <path d="M8 10H16M8 14H13" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-        </button>
-      )}
 
       {/* ── Chat Drawer ── */}
       {chatOpen && (
