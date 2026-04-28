@@ -6,18 +6,46 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* 데스크톱: 아이폰17 프레임을 중앙에 표시 */
+html {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+}
+
 body {
-  margin: 0 auto;
+  width: 390px;
+  height: 844px;
+  overflow: hidden;
+  position: relative;
   font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
   background: #F4F4F4;
-  max-width: 480px;
-  min-height: 100dvh;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px #333, 0 32px 80px rgba(0,0,0,0.6);
+}
+
+/* 실제 모바일 기기: 전체화면 */
+@media (max-width: 430px) {
+  html {
+    display: block;
+    background: #F4F4F4;
+  }
+  body {
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
+  }
 }
 
 #root {
-  min-height: 100dvh;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .scrollbar-hide::-webkit-scrollbar {

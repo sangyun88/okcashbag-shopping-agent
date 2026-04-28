@@ -35,7 +35,7 @@ export default function App() {
   function handleBottomTab(t) { setBottomTab(t); setShowMY(false); }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', background: T.white, position: 'relative', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: T.white, position: 'relative', overflow: 'hidden' }}>
 
       {/* ── Shell ── */}
       <StatusBar dark={isDark} />
