@@ -2,6 +2,7 @@ import {
   searchTodayDeals,
   searchGroupBuys,
   searchECoupons,
+  searchECouponsBySituation,
   getMovies,
   getUserPoint,
   sortItems,
@@ -9,6 +10,111 @@ import {
 } from './mockData';
 
 // ─── 1. 텍스트 정규화 ─────────────────────────────────────────────────────────
+
+// ─── 0. 상황 감지 ─────────────────────────────────────────────────────────────
+
+const SITUATION_MAP = [
+  {
+    situations: ['hot', 'sweet'],
+    patterns: [/더워|더운데|무더워|덥다|더위|시원한|시원하게|시원한거|냉방|땀|폭염|열대야/],
+    emoji: '🌡️',
+    label: '더운 날',
+    comment: '더운 날엔 시원한 게 최고죠! 아이스 음료랑 아이스크림 쿠폰을 모아봤어요 🧊',
+    quickReplies: ['아이스크림 더 보기', '아이스 커피 쿠폰', '치킨도 땡겨'],
+  },
+  {
+    situations: ['hungry', 'chicken'],
+    patterns: [/치킨|닭|뿌링|볼케이노|황금올리브|맛초킹|고추바사삭/],
+    emoji: '🍗',
+    label: '치킨',
+    comment: '치킨 쿠폰 모아봤어요! BBQ, 굽네, BHC 다 있어요 🍗',
+    quickReplies: ['BBQ만 보기', '굽네치킨 보기', 'BHC 보기'],
+  },
+  {
+    situations: ['hungry', 'pizza'],
+    patterns: [/피자|도미노|pizza/i],
+    emoji: '🍕',
+    label: '피자',
+    comment: '피자 쿠폰이에요! 도미노 L사이즈 최대 27% 할인 중이에요 🍕',
+    quickReplies: ['치킨도 보기', '버거도 보기'],
+  },
+  {
+    situations: ['hungry', 'burger'],
+    patterns: [/버거|햄버거|쉐이크쉑|쉑버거|맥도날드|버거킹/],
+    emoji: '🍔',
+    label: '버거',
+    comment: '버거 쿠폰이에요! 쉐이크쉑 할인 중이에요 🍔',
+    quickReplies: ['치킨도 보기', '피자도 보기'],
+  },
+  {
+    situations: ['hungry'],
+    patterns: [/배고파|배고픈데|배가 고파|밥|식사|뭐 먹을|점심|저녁|야식|먹고싶|배터져|출출|허기/],
+    emoji: '🍽️',
+    label: '배고픔',
+    comment: '배고프시군요! 치킨·피자·버거·편의점 쿠폰 모아봤어요 😋',
+    quickReplies: ['치킨 쿠폰', '피자 쿠폰', '편의점 도시락'],
+  },
+  {
+    situations: ['sweet'],
+    patterns: [/달달|달콤|디저트|케이크|도넛|빵|과자|단거|달달한거|단걸|달콤한|스위트|아이스크림/],
+    emoji: '🍰',
+    label: '달콤한 것',
+    comment: '달콤한 게 당기시는군요! 배스킨라빈스·던킨·뚜레쥬르 쿠폰이에요 🍩',
+    quickReplies: ['아이스크림만 보기', '케이크 보기', '도넛 보기'],
+  },
+  {
+    situations: ['coffee'],
+    patterns: [/커피|카페|아메리카노|라떼|카페인|커피 마시|카공|카페 가|카페인 충전/],
+    emoji: '☕',
+    label: '커피',
+    comment: '커피 쿠폰이에요! 스타벅스·이디야·아티제·메가커피·던킨 다 있어요 ☕',
+    quickReplies: ['스타벅스만 보기', '이디야 보기', '메가커피 보기'],
+  },
+  {
+    situations: ['beauty'],
+    patterns: [/올리브영|뷰티|화장품|스킨케어|선크림|로션|에센스|마스크팩|클렌징/],
+    emoji: '💄',
+    label: '뷰티',
+    comment: '올리브영 할인 쿠폰이에요! 선크림, 스킨케어, 상품권 다 있어요 💄',
+    quickReplies: ['선크림 보기', '상품권 보기', '기프트 추천'],
+  },
+  {
+    situations: ['home'],
+    patterns: [/집콕|혼자|심심|읽을|웹툰|소설|책|독서|집에서|방콕|편의점|넷플|ott/i],
+    emoji: '🏠',
+    label: '집콕',
+    comment: '집에서 즐기기 좋은 쿠폰이에요! 리디 웹툰·소설, GS25 편의점 쿠폰이에요 🏠',
+    quickReplies: ['리디 더 보기', 'GS25 쿠폰', '야식 주문'],
+  },
+  {
+    situations: ['gift'],
+    patterns: [/선물|기념일|생일|기프트|챙겨줄|줄만한|추천해줄|답례|고마워서|기프티콘 줄/],
+    emoji: '🎁',
+    label: '선물',
+    comment: '선물용으로 딱 좋은 쿠폰이에요! 올리브영·배스킨·아티제·리디 추천드려요 🎁',
+    quickReplies: ['올리브영 보기', '배스킨라빈스 보기', '커피 선물'],
+  },
+];
+
+function detectSituation(normalized, original) {
+  for (const sit of SITUATION_MAP) {
+    if (sit.patterns.some((re) => re.test(normalized) || re.test(original))) {
+      return sit;
+    }
+  }
+  return null;
+}
+
+function buildSituationResponse(sit) {
+  const items = searchECouponsBySituation(sit.situations).slice(0, 6);
+  if (items.length === 0) return null;
+  return {
+    text: sit.comment,
+    cards: { type: 'ecoupon', items },
+    quickReplies: sit.quickReplies,
+    type: 'ecoupon_search',
+  };
+}
 
 const NORMALIZATIONS = [
   [/공구/g, '공동구매'],
@@ -24,8 +130,18 @@ const NORMALIZATIONS = [
   [/갤럭시|galaxy/gi, '갤럭시'],
   [/아이폰|iphone/gi, '아이폰'],
   [/노트북|랩탑|laptop/gi, '노트북'],
-  [/배라|베라/g, '배스킨'],
+  [/배라|베라|베스킨/g, '배스킨라빈스'],
   [/올영/g, '올리브영'],
+  [/이디야|ediya/gi, '이디야커피'],
+  [/뚜레|뚜레쥬르|tlj/gi, '뚜레쥬르'],
+  [/비비큐|비비q/gi, 'BBQ'],
+  [/굽네|goobne/gi, '굽네치킨'],
+  [/비에이치씨|bhc/gi, 'BHC'],
+  [/쉑|쉐이크쉑|shack/gi, '쉐이크쉑'],
+  [/던킨|dunkin/gi, '던킨'],
+  [/아티제|artisee/gi, '아티제'],
+  [/리디북스|ridi/gi, '리디'],
+  [/지에스|gs25|gs 25/gi, 'GS25'],
   [/아가|애기|애기용/g, '아기'],
   [/애들|아이들|애기들/g, '유아동'],
   [/캐쉬백|ok캐쉬|okcash|포인/gi, '포인트'],
@@ -47,6 +163,19 @@ function normalize(text) {
 const PRODUCT_SYNONYMS = {
   메가커피: ['메가커피', '메가mgc', '메가 커피'],
   스타벅스: ['스타벅스', '스벅'],
+  이디야커피: ['이디야', '이디야커피', 'ediya'],
+  아티제: ['아티제', 'artisee'],
+  던킨: ['던킨', 'dunkin', '도넛'],
+  배스킨라빈스: ['배스킨라빈스', '배라', '베라', '배스킨', '아이스크림'],
+  뚜레쥬르: ['뚜레쥬르', '뚜레', 'tlj'],
+  BBQ: ['bbq', 'BBQ', '비비큐'],
+  굽네치킨: ['굽네', '굽네치킨', '볼케이노', '고추바사삭'],
+  BHC: ['bhc', 'BHC', '뿌링클', '맛초킹'],
+  도미노피자: ['도미노', '도미노피자'],
+  쉐이크쉑: ['쉐이크쉑', '쉑버거', '쉑', 'shack'],
+  올리브영: ['올리브영', '올영'],
+  리디: ['리디', '리디북스', 'ridi', '웹툰', '전자책'],
+  GS25: ['gs25', 'GS25', 'gs', '편의점'],
   노트북:   ['노트북', '랩탑', '울트라북', '맥북'],
   이어폰:   ['이어폰', '에어팟', '버즈', '헤드셋', '이어버드'],
   스마트폰: ['스마트폰', '아이폰', '갤럭시', '핸드폰', '휴대폰'],
@@ -622,6 +751,13 @@ export async function processMessage(text, history = []) {
   if (followUp) {
     const result = handleFollowUp(followUp, ctx);
     if (result) return result;
+  }
+
+  // 상황 기반 추천 (인사·포인트·영화·정렬 전에 감지)
+  const situation = detectSituation(normalized, text);
+  if (situation) {
+    const sitResult = buildSituationResponse(situation);
+    if (sitResult) return sitResult;
   }
 
   // 빠른 답장: 정렬 버튼 ("X으로 보기")
