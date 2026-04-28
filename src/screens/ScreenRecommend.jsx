@@ -76,7 +76,7 @@ export default function ScreenRecommend({ onAISearch }) {
             type="submit"
             style={{
               width: 32, height: 32, borderRadius: '50%', border: 'none', cursor: 'pointer',
-              background: query.trim() ? '#E8003D' : T.gray200,
+              background: query.trim() ? '#E8003D' : T.purple,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0, transition: 'background 0.15s',
             }}
