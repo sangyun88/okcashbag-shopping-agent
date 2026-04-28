@@ -1,10 +1,6 @@
-import { useState } from 'react';
 import { T } from '../tokens';
-import Chip from '../components/ui/Chip';
 import Card2 from '../components/ui/Card2';
 import SectionTitle from '../components/ui/SectionTitle';
-
-const CHIPS = ['전체', '기프티콘', '핫딜', '할인딜', 'e쿠폰', '공동구매', '영화'];
 
 const PRODUCTS = [
   { brand: '스타벅스', name: '카페 아메리카노 T', price: '4,700원', disc: '4%', rating: '4.5', reviews: '1.2k' },
@@ -16,7 +12,6 @@ const PRODUCTS = [
 ];
 
 export default function ScreenRecommend() {
-  const [chip, setChip] = useState('전체');
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: T.gray50 }}>
       {/* Hero banner */}
@@ -45,15 +40,6 @@ export default function ScreenRecommend() {
               width: i === 0 ? 16 : 6, height: 6, borderRadius: 3,
               background: i === 0 ? '#fff' : 'rgba(255,255,255,0.4)',
             }} />
-          ))}
-        </div>
-      </div>
-
-      {/* Category chips */}
-      <div style={{ background: T.white, borderBottom: `1px solid ${T.gray100}` }}>
-        <div style={{ display: 'flex', gap: 6, padding: '10px 14px', overflowX: 'auto' }}>
-          {CHIPS.map((c) => (
-            <Chip key={c} label={c} active={chip === c} onClick={() => setChip(c)} />
           ))}
         </div>
       </div>
