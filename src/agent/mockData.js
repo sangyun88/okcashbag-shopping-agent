@@ -834,29 +834,6 @@ export const searchECouponsBySituation = (situations) => {
 
 export const getUserPoint = () => mockUserPoint;
 
-// ─── 경쟁사 가격 비교 ─────────────────────────────────────────────────────────
-// 쿠폰 ID를 시드로 결정론적으로 경쟁사 가격 생성 (실제 서비스에선 API로 대체)
-export function getCompetitorPrices(item) {
-  const seed = item.id.replace(/\D/g, '').slice(-3);
-  const n = parseInt(seed || '42');
-  const f1 = 1.09 + (n % 8)  * 0.01;   // 쿠팡:      1.09~1.16
-  const f2 = 1.14 + (n % 10) * 0.01;  // 카카오선물: 1.14~1.23
-  const f3 = 1.06 + (n % 6)  * 0.01;   // 11번가:    1.06~1.11
-
-  const round = (price) => Math.ceil(price / 100) * 100;
-
-  const competitors = [
-    { name: '쿠팡',      price: round(item.price * f1) },
-    { name: '카카오선물', price: round(item.price * f2) },
-    { name: '11번가',    price: round(item.price * f3) },
-  ];
-
-  const minCompetitor = Math.min(...competitors.map((c) => c.price));
-  const saving = minCompetitor - item.price;
-
-  return { competitors, saving, minCompetitor };
-}
-
 // ─── 정렬 헬퍼 ───────────────────────────────────────────────────────────────
 export const SORT_LABELS = {
   newest:        '최신 등록 순',
