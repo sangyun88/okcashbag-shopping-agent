@@ -1,7 +1,40 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { T } from '../tokens';
 import Card2 from '../components/ui/Card2';
 import SectionTitle from '../components/ui/SectionTitle';
+
+function getPersonalizedSuggestions() {
+  const hour = new Date().getHours();
+  const day = new Date().getDay(); // 0=일, 6=토
+  const isWeekend = day === 0 || day === 6;
+
+  if (hour >= 6 && hour < 10) {
+    // 아침
+    return isWeekend
+      ? ['주말 모닝커피 ☕', '브런치 카페 찾기', '아침 베이커리']
+      : ['출근길 아메리카노', '모닝커피 한 잔', '아침 간편식'];
+  } else if (hour >= 10 && hour < 12) {
+    // 오전
+    return ['오전 커피 한 잔', '달달한 디저트', '오늘 핫딜 뭐야?'];
+  } else if (hour >= 12 && hour < 14) {
+    // 점심
+    return ['점심먹고 커피 ☕', '점심 후 디저트', '식후 아이스크림'];
+  } else if (hour >= 14 && hour < 17) {
+    // 오후
+    return ['오늘도 아이스크림 🍦', '오후 달달한 거', '카페 쿠폰 뭐있어?'];
+  } else if (hour >= 17 && hour < 20) {
+    // 저녁
+    return isWeekend
+      ? ['저녁 치킨 어때? 🍗', '주말 피자 시킬까?', '저녁 야식 추천']
+      : ['퇴근길 커피', '저녁 치킨 어때? 🍗', '오늘 뭐 먹지?'];
+  } else if (hour >= 20 && hour < 23) {
+    // 밤
+    return ['야식 시킬까요? 🌙', '치킨 쿠폰 있어?', '피자 할인 찾기'];
+  } else {
+    // 심야 (23시~6시)
+    return ['집콕 야식 추천', '오늘 최저가 뭐야?', '내일 모닝커피 쿠폰'];
+  }
+}
 
 const PRODUCTS = [
   { brand: '스타벅스', name: '카페 아메리카노 T', price: '4,700원', disc: '4%', rating: '4.5', reviews: '1.2k' },
@@ -14,6 +47,7 @@ const PRODUCTS = [
 
 export default function ScreenRecommend({ onAISearch }) {
   const [query, setQuery] = useState('');
+  const suggestions = useMemo(() => getPersonalizedSuggestions(), []);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -87,9 +121,9 @@ export default function ScreenRecommend({ onAISearch }) {
             </svg>
           </button>
         </form>
-        {/* 빠른 질문 */}
-        <div style={{ display: 'flex', gap: 6, marginTop: 8, overflowX: 'auto' }}>
-          {['오늘 핫딜 추천', '스타벅스 쿠폰', '치킨 할인'].map((q) => (
+        {/* 개인화 빠른 질문 */}
+        <div style={{ display: 'flex', gap: 6, marginTop: 8, overflowX: 'auto' }} className="scrollbar-hide">
+          {suggestions.map((q) => (
             <button key={q} onClick={() => onAISearch(q)} style={{
               flexShrink: 0, background: 'none', border: `1px solid ${T.gray200}`,
               borderRadius: 9999, padding: '4px 12px', fontSize: 12, color: T.gray700,
