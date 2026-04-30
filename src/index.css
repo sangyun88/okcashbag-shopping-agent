@@ -56,3 +56,12 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* 전체 스크롤바 숨김 */
+*::-webkit-scrollbar {
+  display: none;
+}
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
