@@ -20,7 +20,7 @@ export default function ScreenMY() {
   const [tab, setTab] = useState('쿠폰');
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: T.gray50 }}>
+    <div className="scrollbar-hide" style={{ flex: 1, overflowY: 'auto', background: T.gray50 }}>
       {/* Header */}
       <div style={{ background: T.white, padding: '12px 14px', borderBottom: `1px solid ${T.gray100}` }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: T.black }}>MY 쇼핑</div>

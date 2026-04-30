@@ -15,7 +15,7 @@ export default function ScreenMovie() {
   const [genre, setGenre] = useState('전체');
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: T.gray50 }}>
+    <div className="scrollbar-hide" style={{ flex: 1, overflowY: 'auto', background: T.gray50 }}>
       {/* Dark hero */}
       <div style={{ background: 'linear-gradient(135deg, #0d0d1a, #1a0533)', padding: '20px 14px 18px', display: 'flex', flexDirection: 'column', gap: 8 }}>
         <div style={{ fontSize: 20, fontWeight: 700, color: T.white, letterSpacing: '-0.5px' }}>영화 할인 티켓</div>

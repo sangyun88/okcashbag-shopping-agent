@@ -26,7 +26,7 @@ export default function ScreenTodayDeal() {
   const s = sec % 60;
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: T.gray900 }}>
+    <div className="scrollbar-hide" style={{ flex: 1, overflowY: 'auto', background: T.gray900 }}>
       {/* Dark hero */}
       <div style={{ position: 'relative', background: T.gray900, padding: '20px 14px 16px', overflow: 'hidden' }}>
         {[140, 200, 60].map((x, i) => (

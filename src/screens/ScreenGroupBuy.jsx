@@ -26,7 +26,7 @@ export default function ScreenGroupBuy() {
   }, []);
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: T.gray50 }}>
+    <div className="scrollbar-hide" style={{ flex: 1, overflowY: 'auto', background: T.gray50 }}>
       {/* Hero banner */}
       <div style={{ position: 'relative', height: 120, background: T.white, overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -30, left: 100, width: 180, height: 180, borderRadius: '50%', background: T.green, opacity: 0.55 }} />

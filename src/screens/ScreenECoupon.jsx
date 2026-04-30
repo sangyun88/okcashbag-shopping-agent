@@ -18,7 +18,7 @@ export default function ScreenECoupon() {
   const [cat, setCat] = useState('카페');
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: T.white }}>
+    <div className="scrollbar-hide" style={{ flex: 1, overflowY: 'auto', background: T.white }}>
       {/* Benefit banner */}
       <div style={{
         background: `linear-gradient(135deg, ${T.purple}22, ${T.pink}18)`,

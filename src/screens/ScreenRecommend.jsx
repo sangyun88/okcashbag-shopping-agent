@@ -57,7 +57,7 @@ export default function ScreenRecommend({ onAISearch }) {
   }
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: T.gray50 }}>
+    <div className="scrollbar-hide" style={{ flex: 1, overflowY: 'auto', background: T.gray50 }}>
       {/* Hero banner */}
       <div style={{
         position: 'relative', height: 220,
